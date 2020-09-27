@@ -1,21 +1,25 @@
 #pragma once
 
-
 #include "Winsock2.h"
 #include <iostream>
+#include "Exception.h"
 
 
+std::string ip;
 
-void Initialization()
+
+void LibraryInitialization()
 {
 	WSADATA wsData;
-	WORD lastVersion = MAKEWORD(0, 0);
+	WORD lastVersion = MAKEWORD(2, 2);
+
+	LPHOSTENT hostEnt = gethostbyname("localhost");
+	if (!hostEnt)
+		throw currentException("Host doesn't exist.", NULL);
 
 	int lastError = WSAStartup(lastVersion, &wsData);
 	if (lastError != 0)
-	{
 		throw currentException("WSAStartup failed with code: ", lastError);
-	}
 }
 
 
@@ -46,4 +50,10 @@ void BindSocket(SOCKET socket, SOCKADDR_IN sockAddr)
 	int bindSocket = bind(socket, (LPSOCKADDR)&sockAddr, sizeof(sockAddr));
 	if (bindSocket == SOCKET_ERROR)
 		throw std:: exception("Bind socket failed with code ", bindSocket);
+}
+
+
+void StartServer()
+{
+
 }
