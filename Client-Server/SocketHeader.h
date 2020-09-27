@@ -5,40 +5,45 @@
 #include <iostream>
 
 
+
 void Initialization()
 {
 	WSADATA wsData;
-	WORD lastVersion = MAKEWORD(2, 2);
+	WORD lastVersion = MAKEWORD(0, 0);
 
 	int lastError = WSAStartup(lastVersion, &wsData);
 	if (lastError != 0)
 	{
-		std::cout << "WSAStartup() failed" << std::endl;
-		WSACleanup();
-		exit(-1);
+		throw currentException("WSAStartup failed with code: ", lastError);
 	}
 }
 
 
-void InitSocket()
+SOCKET CreateSocket()
 {
+	SOCKET sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if (sock == INVALID_SOCKET)
+		throw INVALID_SOCKET;
 
+	return sock;
 }
 
 
-void InitSocket(SOCKET socketToInit, int port)
-{
-	if (socketToInit == INVALID_SOCKET)
-	{
-		std::cout << "INVALID SOCKET error" << std::endl;
-		WSACleanup();
-		exit(-1);
-	}
-	
+SOCKADDR_IN InitSocket(int port)
+{	
+	SOCKADDR_IN sockAddr;
+
+	sockAddr.sin_family = PF_INET;
+	sockAddr.sin_port = port;
+	sockAddr.sin_addr.s_addr = INADDR_ANY;
+
+	return sockAddr;
 }
 
-void checkForInvalidSocket()
+
+void BindSocket(SOCKET socket, SOCKADDR_IN sockAddr)
 {
-
+	int bindSocket = bind(socket, (LPSOCKADDR)&sockAddr, sizeof(sockAddr));
+	if (bindSocket == SOCKET_ERROR)
+		throw std:: exception("Bind socket failed with code ", bindSocket);
 }
-
