@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include "Winsock2.h"
 
 
 
@@ -14,10 +15,10 @@ Exception currentException(std::string message, int code);
 
 Exception currentException(std::string message, int code)
 {
-	Exception currenException;
+	Exception currentException;
 
-	currenException.code = code;
-	currenException.message = message;
+	currentException.code = code;
+	currentException.message = message;
 
-	return currenException;
+	return currentException;
 }
