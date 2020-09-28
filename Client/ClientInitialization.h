@@ -24,14 +24,16 @@ void LibraryInitialization()
 		throw currentException("WSAStartup failed with code: ", lastError);
 }
 
-void SocketInitialization(SOCKET& server, SOCKADDR_IN& sockAddr, std::string ip)
+
+void SocketInitialization(SOCKET& server, SOCKADDR_IN& sockAddr, std::string ip, int port)
 {
 	CreateSocket(server);
-	InitClientSocket(sockAddr, 2002, ip);
+	InitClientSocket(sockAddr, port, ip);
 	std::string host = GetHost();
 
 	std::cout << "Client started at " << host << ", port: " << sockAddr.sin_port << std::endl;
 }
+
 
 void CreateSocket(SOCKET& sock)
 {

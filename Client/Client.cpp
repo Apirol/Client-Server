@@ -5,7 +5,6 @@
 #include "ClientInitialization.h"
 
 
-void Startclient(SOCKET client);
 void CreateClientSocket(SOCKET& client, SOCKET& clientSocket);
 void ReceivingDataFromClient(SOCKET& clientSocket, char* data);
 void ProcessingAndSendDAta(SOCKET& clientSocket, char* data);
@@ -21,9 +20,26 @@ int main()
 
 	try
 	{
-		LibraryInitialization();
-		SocketInitialization(client, sockAddr);
+		std::string ip;
+		std::cout << "¬ведите IP сервера: ";
+		std::cin >> ip;
 
+		int port;
+		std::cout << "¬ведите порт сервера: ";
+		std::cin >> port;
+
+		LibraryInitialization();
+		SocketInitialization(client, sockAddr, ip, port);
+
+		std::string message;
+		std::cout << "¬ведите сообщение: ";
+		std::cin >> message;
+		SendMessageToServer(client, message);
+
+		
+		
+	
+		
 	}
 	catch (Exception err)
 	{
@@ -35,40 +51,31 @@ int main()
 }
 
 
-void StartClient(SOCKET client)
+
+void ConnectToServer(SOCKET &client, LPSOCKADDR_IN serverInfo)
 {
-	SOCKET clientSocket;
-	char data[N];
-
-	while (true)
-	{
-		int retVal = listen(client, 10);
-		if (retVal == SOCKET_ERROR)
-			throw currentException("Listening failed with code: ", retVal);
-
-		CreateClientSocket(client, clientSocket);
-		ReceivingDataFromClient(clientSocket, data);
-		ProcessingAndSendDAta(clientSocket, data);
-	}
+	int lastError = connect(client, (LPSOCKADDR)&serverInfo, sizeof(serverInfo));
+	if (lastError == SOCKET_ERROR)
+		throw currentException("Connecting failed with code: ", lastError);
+	std::cout << "Connected sucessfully" << std::endl;
 }
 
 
-void CreateClientSocket(SOCKET& client, SOCKET& clientSocket)
+void SendMessageToServer(SOCKET& client, std::string message)
 {
-	SOCKADDR_IN from;
-	int fromLenght = sizeof(from);
-
-	clientSocket = accept(client, (sockaddr*)&from, &fromLenght);
-	if (clientSocket == SOCKET_ERROR)
-		throw currentException("Listening failed with code: ", clientSocket);
+	int lastError = send(client, message.c_str(), message.size(), 0);
+	if (lastError == SOCKET_ERROR)
+		throw currentException("Sending failed with code: ", lastError);
+	std::cout << "Sending sucessfully";
 }
 
 
-void ReceivingDataFromClient(SOCKET& clientSocket, char* data)
+void ReceivingAnswer(SOCKET& client, char* answer)
 {
-	int retVal = recv(clientSocket, data, N, 0);
-	if (retVal == SOCKET_ERROR)
-		throw currentException("Receiving failed with code: ", retVal);
+	int lastError = recv(client, answer, 256, 0);
+	if (lastError == SOCKET_ERROR)
+		throw currentException("Receiving failed with code: ", lastError);
+	std::cout << "Receiving sucessfully";
 }
 
 
