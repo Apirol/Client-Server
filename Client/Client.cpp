@@ -5,12 +5,10 @@
 #include "ClientInitialization.h"
 
 
-void CreateClientSocket(SOCKET& client, SOCKET& clientSocket);
-void ReceivingDataFromClient(SOCKET& clientSocket, char* data);
-void ProcessingAndSendDAta(SOCKET& clientSocket, char* data);
-void ReverseMessage(char* message);
-void SendDataToClient(SOCKET clientSock, char* data);
-void Shutdown(SOCKET& clientSocket);
+void ConnectToServer(SOCKET& client, SOCKADDR_IN& serverInfo);
+void SendMessageToServer(SOCKET& client, std::string message);
+void SendMessageToServer(SOCKET& client, std::string message);
+void RecieveAnswer(SOCKET& client, char* answer);
 
 
 int main()
@@ -21,25 +19,29 @@ int main()
 	try
 	{
 		std::string ip;
-		std::cout << "¬ведите IP сервера: ";
+		std::cout << "Enter server's IP: ";
 		std::cin >> ip;
 
 		int port;
-		std::cout << "¬ведите порт сервера: ";
+		std::cout << "Enter server's port: ";
 		std::cin >> port;
 
 		LibraryInitialization();
 		SocketInitialization(client, sockAddr, ip, port);
 
 		std::string message;
-		std::cout << "¬ведите сообщение: ";
+		std::cout << "Enter message: ";
 		std::cin >> message;
+
+		ConnectToServer(client, sockAddr);
 		SendMessageToServer(client, message);
 
-		
-		
-	
-		
+		char answer[256];
+		RecieveAnswer(client, answer);
+		std::cout << answer;
+
+		closesocket(client);
+		WSACleanup();
 	}
 	catch (Exception err)
 	{
@@ -52,7 +54,7 @@ int main()
 
 
 
-void ConnectToServer(SOCKET &client, LPSOCKADDR_IN serverInfo)
+void ConnectToServer(SOCKET &client, SOCKADDR_IN &serverInfo)
 {
 	int lastError = connect(client, (LPSOCKADDR)&serverInfo, sizeof(serverInfo));
 	if (lastError == SOCKET_ERROR)
@@ -70,46 +72,10 @@ void SendMessageToServer(SOCKET& client, std::string message)
 }
 
 
-void ReceivingAnswer(SOCKET& client, char* answer)
+void RecieveAnswer(SOCKET& client, char* answer)
 {
 	int lastError = recv(client, answer, 256, 0);
 	if (lastError == SOCKET_ERROR)
 		throw currentException("Receiving failed with code: ", lastError);
-	std::cout << "Receiving sucessfully";
-}
-
-
-void ProcessingAndSendDAta(SOCKET& clientSocket, char* data)
-{
-	if (data[0] != 'S' && data[1] != '/n')
-	{
-		ReverseMessage(data);
-		SendDataToClient(clientSocket, data);
-	}
-	else
-		Shutdown(clientSocket);
-}
-
-
-void ReverseMessage(char* message)
-{
-	for (int i = 0, j = strlen(message) - 1; i < strlen(message) / 2; i++, j--)
-		std::swap(message[i], message[j]);
-}
-
-
-void SendDataToClient(SOCKET clientSock, char* data)
-{
-	int retVal = send(clientSock, data, N, 0);
-	if (retVal == SOCKET_ERROR)
-		throw currentException("Sending failed with code: ", retVal);
-}
-
-
-void Shutdown(SOCKET& clientSocket)
-{
-	char answer[] = "client shutdown";
-	SendDataToClient(clientSocket, answer);
-	closesocket(clientSocket);
-	throw currentException("The client was down ", NULL);
+	std::cout << "Receive sucessfully";
 }

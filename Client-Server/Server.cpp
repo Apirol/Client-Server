@@ -13,7 +13,7 @@ void SendDataToClient(SOCKET clientSock, char* data);
 void Shutdown(SOCKET& clientSocket);
 
 
-int main()
+int main(void)
 {
 	SOCKET server;
 	SOCKADDR_IN sockAddr;
