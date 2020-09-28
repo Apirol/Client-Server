@@ -18,15 +18,12 @@
     <ClCompile Include="Server.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Client.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Exception.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="SocketHandler.h">
+    <ClInclude Include="SocketController.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

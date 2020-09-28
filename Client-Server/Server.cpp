@@ -1,7 +1,7 @@
 #pragma comment(lib, "Ws2_32.lib")
 
 #include "Winsock2.h"
-#include "SocketHandler.h"
+#include "SocketController.h"
 #include "Exception.h"
 
 
@@ -15,6 +15,8 @@ int main()
 		SOCKADDR_IN sockAddr = InitSocket(2002);
 
 		BindSocket(server, sockAddr);
+		std::string host = GetHost();
+		std::cout << "Server starter at " << host << ", port: " << sockAddr.sin_port << std::endl;
 	}
 	catch (Exception err)
 	{
@@ -23,6 +25,13 @@ int main()
 		return -1;
 	}
 }
+
+
+void StartServer()
+{
+
+}
+
 
 void ReverseMessage(std::string &message)
 {

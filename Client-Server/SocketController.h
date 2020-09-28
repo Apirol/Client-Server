@@ -1,4 +1,5 @@
 #pragma once
+#pragma warning(disable : 4996) 
 
 #include "Winsock2.h"
 #include <iostream>
@@ -6,16 +7,13 @@
 
 
 std::string ip;
+const int N = 256;
 
 
 void LibraryInitialization()
 {
 	WSADATA wsData;
 	WORD lastVersion = MAKEWORD(2, 2);
-
-	LPHOSTENT hostEnt = gethostbyname("localhost");
-	if (!hostEnt)
-		throw currentException("Host doesn't exist.", NULL);
 
 	int lastError = WSAStartup(lastVersion, &wsData);
 	if (lastError != 0)
@@ -53,7 +51,25 @@ void BindSocket(SOCKET socket, SOCKADDR_IN sockAddr)
 }
 
 
-void StartServer()
+std::string GetHost()
 {
+	char HOST[N];
+	char HostName[1024];
 
+	int checkHost = gethostname(HostName, 1024);
+
+	if (checkHost == SOCKET_ERROR)
+		throw std::exception("Unable to get host's name ", checkHost);
+	else
+	{
+		LPHOSTENT lpHost = gethostbyname(HostName);
+		if (lpHost == NULL)
+			throw std::exception("Unable to get LPHOSTENT ", checkHost);
+		else
+		{
+			strcpy_s(HOST, inet_ntoa(*((in_addr*)lpHost->h_addr_list[0])));
+			return  std::string(HOST);
+		}
+	}
+	return 0;
 }
