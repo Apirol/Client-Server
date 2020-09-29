@@ -7,7 +7,7 @@ const int N = 256;
 
 
 void LibraryInitialization();
-void SocketInitialization(SOCKET& server, SOCKADDR_IN& sockAddr, std::string ip, int port, LPHOSTENT &hostEnt);
+void SocketInitialization(SOCKET& server, SOCKADDR_IN& sockAddr, std::string ip, LPHOSTENT &hostEnt);
 void CreateSocket(SOCKET& sock);
 void InitClientSocket(SOCKADDR_IN& sockAddr, std::string ip, int port);
 void BindSocket(SOCKET socket, SOCKADDR_IN sockAddr);
@@ -25,13 +25,13 @@ void LibraryInitialization()
 }
 
 
-void SocketInitialization(SOCKET& client, SOCKADDR_IN& sockAddr, std::string ip, int port, LPHOSTENT &hostEnt)
+void SocketInitialization(SOCKET& client, SOCKADDR_IN& sockAddr, std::string ip, LPHOSTENT &hostEnt)
 {
 	CreateSocket(client);
-	InitClientSocket(sockAddr, ip, port);
+	InitClientSocket(sockAddr, ip, 2002);
 	GetHost(hostEnt);
 
-	std::cout << "Client started at " << hostEnt->h_addr_list[0] << ", port: " << sockAddr.sin_port << std::endl;
+	std::cout << "Client started at " << inet_ntoa(sockAddr.sin_addr) << ", port: " << sockAddr.sin_port << std::endl;
 }
 
 

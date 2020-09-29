@@ -2,15 +2,15 @@
 #include "Exception.h"
 
 
-const int N = 256;
-
-
 void LibraryInitialization();
 void SocketInitialization(SOCKET& server, SOCKADDR_IN& sockAddr, LPHOSTENT &hostEnt);
 void CreateSocket(SOCKET& sock);
 void InitClientSocket(SOCKADDR_IN& sockAddr, int port);
 void BindSocket(SOCKET socket, SOCKADDR_IN sockAddr);
 void GetHost(LPHOSTENT &lpHost);
+
+
+const int N = 256;
 
 
 void LibraryInitialization()
@@ -30,7 +30,7 @@ void SocketInitialization(SOCKET& server, SOCKADDR_IN& sockAddr, LPHOSTENT &host
 	BindSocket(server, sockAddr);
 	GetHost(hostEnt);
 
-	std::cout << "Server started at " << hostEnt->h_addr_list[0] << ", port: " << sockAddr.sin_port << std::endl;
+	std::cout << "Server started at " << inet_ntoa(sockAddr.sin_addr) << ", port: " << sockAddr.sin_port << std::endl;
 }
 
 void CreateSocket(SOCKET& sock)
@@ -53,7 +53,7 @@ void BindSocket(SOCKET socket, SOCKADDR_IN sockAddr)
 {
 	int bindSocket = bind(socket, (LPSOCKADDR)&sockAddr, sizeof(sockAddr));
 	if (bindSocket == SOCKET_ERROR)
-		throw currentException("Bind socket failed with code: ", bindSocket);
+		throw currentException("Bind socket failed with code: ", WSAGetLastError());
 }
 
 

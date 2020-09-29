@@ -7,7 +7,6 @@
 
 void ConnectToServer(SOCKET& client, SOCKADDR_IN& serverInfo);
 void SendMessageToServer(SOCKET& client, std::string message);
-void SendMessageToServer(SOCKET& client, std::string message);
 void RecieveAnswer(SOCKET& client, char* answer);
 
 
@@ -20,15 +19,11 @@ int main()
 	try
 	{
 		std::string ip;
-		std::cout << "Enter server's IP: ";
+		std::cout << "Enter IP: ";
 		std::cin >> ip;
 
-		int port;
-		std::cout << "Enter server's port: ";
-		std::cin >> port;
-
 		LibraryInitialization();
-		SocketInitialization(client, sockAddr, ip, port, hostEnt);
+		SocketInitialization(client, sockAddr, ip, hostEnt);
 
 		std::string message;
 		std::cout << "Enter message: ";
@@ -69,7 +64,7 @@ void SendMessageToServer(SOCKET& client, std::string message)
 	int lastError = send(client, message.c_str(), message.size(), 0);
 	if (lastError == SOCKET_ERROR)
 		throw currentException("Sending failed with code: ", WSAGetLastError());
-	std::cout << "Sending sucessfully";
+	std::cout << "Sending sucessfully" << std::endl;
 }
 
 
@@ -78,5 +73,5 @@ void RecieveAnswer(SOCKET& client, char* answer)
 	int lastError = recv(client, answer, 256, 0);
 	if (lastError == SOCKET_ERROR)
 		throw currentException("Receiving failed with code: ", WSAGetLastError());
-	std::cout << "Receive sucessfully";
+	std::cout << "Receive sucessfully" << std::endl;
 }
