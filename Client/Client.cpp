@@ -3,11 +3,12 @@
 
 #include "/Users/redut/source/repos/Client-server/Client-server/Exception.h"
 #include "ClientInitialization.h"
+#include <string>
 
 
 void ConnectToServer(SOCKET& client, SOCKADDR_IN& serverInfo);
 void SendMessageToServer(SOCKET& client, std::string message);
-void RecieveAnswer(SOCKET& client, char* answer);
+void RecieveAnswer(SOCKET& client, std::string &answer);
 
 
 int main()
@@ -21,18 +22,19 @@ int main()
 		std::string ip;
 		std::cout << "Enter IP: ";
 		std::cin >> ip;
+		std::cin.ignore();
 
 		LibraryInitialization();
 		SocketInitialization(client, sockAddr, ip, hostEnt);
 
 		std::string message;
 		std::cout << "Enter message: ";
-		std::cin >> message;
+		std::getline(std::cin, message);
 
 		ConnectToServer(client, sockAddr);
 		SendMessageToServer(client, message);
 
-		char answer[256];
+		std::string answer;
 		RecieveAnswer(client, answer);
 		std::cout << answer;
 
@@ -61,17 +63,22 @@ void ConnectToServer(SOCKET &client, SOCKADDR_IN &serverInfo)
 
 void SendMessageToServer(SOCKET& client, std::string message)
 {
-	int lastError = send(client, message.c_str(), message.size(), 0);
-	if (lastError == SOCKET_ERROR)
+	int result = send(client, message.c_str(), message.size(), 0);
+	if (result == SOCKET_ERROR)
 		throw currentException("Sending failed with code: ", WSAGetLastError());
 	std::cout << "Sending sucessfully" << std::endl;
 }
 
 
-void RecieveAnswer(SOCKET& client, char* answer)
+void RecieveAnswer(SOCKET& client, std::string &answer)
 {
-	int lastError = recv(client, answer, 256, 0);
-	if (lastError == SOCKET_ERROR)
+	char buffer[N];
+
+	int result = recv(client, buffer, N, 0);
+	if (result == SOCKET_ERROR)
 		throw currentException("Receiving failed with code: ", WSAGetLastError());
+
+	buffer[result] = '\0';
+	answer = buffer;
 	std::cout << "Receive sucessfully" << std::endl;
 }

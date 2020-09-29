@@ -2,16 +2,17 @@
 #pragma warning(disable : 4996) 
 
 #include "ServerInitialization.h"
+#include <sstream>
 
 
 void StartServer(SOCKET &server);
 void StartListening(SOCKET& server);
 void CreateClientSocket(SOCKET& server, SOCKET& clientSocket, SOCKADDR_IN &from);
-void ReceiveDataFromClient(SOCKET& clientSocket, char* data);
-void ProcessingData(SOCKET &clientSock, char* data);
-void Shutdown(SOCKET& clientSock, char* data);
-void ReverseMessage(char* message);
-void SendDataToClient(SOCKET &clientSock, char* data);
+void ReceiveDataFromClient(SOCKET& clientSocket, std::string &data);
+void ProcessingData(SOCKET &clientSock, std::string &data);
+void Shutdown(SOCKET& clientSock, std::string data);
+void ReverseMessage(std::string &data);
+void SendDataToClient(SOCKET &clientSock, std::string data);
 
 
 int main(void)
@@ -44,7 +45,7 @@ void StartServer(SOCKET &server)
 {
 	SOCKET clientSocket;
 	SOCKADDR_IN from;
-	char data[N];
+	std::string data;
 
 	while (true)
 	{
@@ -53,7 +54,6 @@ void StartServer(SOCKET &server)
 
 		ReceiveDataFromClient(clientSocket, data);
 		ProcessingData(clientSocket, data);
-		ReverseMessage(data);
 		
 		SendDataToClient(clientSocket, data);
 	}
@@ -79,19 +79,24 @@ void CreateClientSocket(SOCKET &server, SOCKET &clientSocket, SOCKADDR_IN &from)
 }
 
 
-void ReceiveDataFromClient(SOCKET &clientSocket, char* data)
+void ReceiveDataFromClient(SOCKET &clientSocket, std::string &data)
 {
-	int retVal = recv(clientSocket, data, N, 0);
-	if (retVal == SOCKET_ERROR)
+	char buffer[N];
+
+	int result = recv(clientSocket, buffer, N, 0);
+	if (result == SOCKET_ERROR)
 		throw currentException("Receiving failed with code: ", WSAGetLastError());
+
+	buffer[result] = '\0';
+	data = buffer;
 }
 
 
-void ProcessingData(SOCKET &clientSock,char* data)
+void ProcessingData(SOCKET &clientSock, std::string &data)
 {
-	if (strncmp(data, "stop", 4) == 0)
+	if (data == "stop")
 	{
-		char message[] = "The server was down";
+		std::string message = "The server was down";
 		Shutdown(clientSock, message);
 	}
 	else
@@ -99,23 +104,22 @@ void ProcessingData(SOCKET &clientSock,char* data)
 }
 
 
-void Shutdown(SOCKET& clientSock, char* data)
+void Shutdown(SOCKET& clientSock, std::string message)
 {
-	SendDataToClient(clientSock, data);
+	SendDataToClient(clientSock, message);
 	throw currentException("The server was down", NULL);
 }
 
 
-void ReverseMessage(char* message)
+void SendDataToClient(SOCKET& clientSock, std::string data)
 {
-	for (int i = 0, j = strlen(message) - 1; i < strlen(message) / 2; i++, j--)
-		std::swap(message[i], message[j]);
+	int result = send(clientSock, data.c_str(), data.size(), 0);
+	if (result == SOCKET_ERROR)
+		throw currentException("Sending failed with code: ", WSAGetLastError());
 }
 
 
-void SendDataToClient(SOCKET& clientSock, char* data)
+inline void ReverseMessage(std::string &data)
 {
-	int retVal = send(clientSock, data, strlen(data), 0);
-	if (retVal == SOCKET_ERROR)
-		throw currentException("Sending failed with code: ", WSAGetLastError());
+	std::reverse(data.begin(), data.end());
 }
