@@ -15,6 +15,7 @@ int main()
 {
 	SOCKET client;
 	SOCKADDR_IN sockAddr;
+	LPHOSTENT hostEnt;
 
 	try
 	{
@@ -27,7 +28,7 @@ int main()
 		std::cin >> port;
 
 		LibraryInitialization();
-		SocketInitialization(client, sockAddr, ip, port);
+		SocketInitialization(client, sockAddr, ip, port, hostEnt);
 
 		std::string message;
 		std::cout << "Enter message: ";
@@ -58,7 +59,7 @@ void ConnectToServer(SOCKET &client, SOCKADDR_IN &serverInfo)
 {
 	int lastError = connect(client, (LPSOCKADDR)&serverInfo, sizeof(serverInfo));
 	if (lastError == SOCKET_ERROR)
-		throw currentException("Connecting failed with code: ", lastError);
+		throw currentException("Connecting failed with code: ", WSAGetLastError());
 	std::cout << "Connected sucessfully" << std::endl;
 }
 
@@ -67,7 +68,7 @@ void SendMessageToServer(SOCKET& client, std::string message)
 {
 	int lastError = send(client, message.c_str(), message.size(), 0);
 	if (lastError == SOCKET_ERROR)
-		throw currentException("Sending failed with code: ", lastError);
+		throw currentException("Sending failed with code: ", WSAGetLastError());
 	std::cout << "Sending sucessfully";
 }
 
@@ -76,6 +77,6 @@ void RecieveAnswer(SOCKET& client, char* answer)
 {
 	int lastError = recv(client, answer, 256, 0);
 	if (lastError == SOCKET_ERROR)
-		throw currentException("Receiving failed with code: ", lastError);
+		throw currentException("Receiving failed with code: ", WSAGetLastError());
 	std::cout << "Receive sucessfully";
 }

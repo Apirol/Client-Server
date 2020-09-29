@@ -7,11 +7,11 @@ const int N = 256;
 
 
 void LibraryInitialization();
-void SocketInitialization(SOCKET& server, SOCKADDR_IN& sockAddr);
+void SocketInitialization(SOCKET& server, SOCKADDR_IN& sockAddr, std::string ip, int port, LPHOSTENT &hostEnt);
 void CreateSocket(SOCKET& sock);
 void InitClientSocket(SOCKADDR_IN& sockAddr, std::string ip, int port);
 void BindSocket(SOCKET socket, SOCKADDR_IN sockAddr);
-std::string GetHost();
+void GetHost(LPHOSTENT lpHost);
 
 
 void LibraryInitialization()
@@ -25,13 +25,13 @@ void LibraryInitialization()
 }
 
 
-void SocketInitialization(SOCKET& client, SOCKADDR_IN& sockAddr, std::string ip, int port)
+void SocketInitialization(SOCKET& client, SOCKADDR_IN& sockAddr, std::string ip, int port, LPHOSTENT &hostEnt)
 {
 	CreateSocket(client);
 	InitClientSocket(sockAddr, ip, port);
-	std::string host = GetHost();
+	GetHost(hostEnt);
 
-	std::cout << "Client started at " << host << ", port: " << sockAddr.sin_port << std::endl;
+	std::cout << "Client started at " << hostEnt->h_addr_list[0] << ", port: " << sockAddr.sin_port << std::endl;
 }
 
 
@@ -51,25 +51,9 @@ void InitClientSocket(SOCKADDR_IN& sockAddr, std::string ip, int port)
 }
 
 
-std::string GetHost()
+void GetHost(LPHOSTENT hostEnt)
 {
-	char HOST[N];
-	char HostName[1024];
-
-	int checkHost = gethostname(HostName, 1024);
-
-	if (checkHost == SOCKET_ERROR)
-		throw currentException("Unable to get host's name ", checkHost);
-	else
-	{
-		LPHOSTENT lpHost = gethostbyname(HostName);
-		if (lpHost == NULL)
-			throw currentException("Unable to get LPHOSTENT ", checkHost);
-		else
-		{
-			strcpy_s(HOST, inet_ntoa(*((in_addr*)lpHost->h_addr_list[0])));
-			return  std::string(HOST);
-		}
-	}
-	return 0;
+	LPHOSTENT lpHost = gethostbyname("localhost");
+	if (lpHost == NULL)
+		throw currentException("Unable to get LPHOSTENT ", WSAGetLastError());
 }

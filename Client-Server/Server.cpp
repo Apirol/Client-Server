@@ -4,24 +4,24 @@
 #include "ServerInitialization.h"
 
 
-void StartServer(SOCKET server);
+void StartServer(SOCKET &server);
 void CreateClientSocket(SOCKET& server, SOCKET& clientSocket);
-void ReceivingDataFromClient(SOCKET& clientSocket, char* data);
-void ProcessingAndSendDAta(SOCKET& clientSocket, char* data);
+void ReceiveDataFromClient(SOCKET& clientSocket, char* data);
+int ProcessingData(char* data);
 void ReverseMessage(char* message);
 void SendDataToClient(SOCKET clientSock, char* data);
-void Shutdown(SOCKET& clientSocket);
 
 
 int main(void)
 {
 	SOCKET server;
 	SOCKADDR_IN sockAddr;
+	LPHOSTENT hostEnt;
 
 	try
 	{
 		LibraryInitialization();
-		SocketInitialization(server, sockAddr);
+		SocketInitialization(server, sockAddr, hostEnt);
 
 		StartServer(server);
 	}
@@ -35,22 +35,31 @@ int main(void)
 }
 
 
-void StartServer(SOCKET server)
+void StartServer(SOCKET &server)
 {
 	SOCKET clientSocket;
 	char data[N];
 
 	while (true)
 	{
-		int retVal = listen(server, 10);
-		if (retVal == SOCKET_ERROR)
-			throw currentException("Listening failed with code: ", retVal);
-
+		StartListening(server);
 		CreateClientSocket(server, clientSocket);
-		ReceivingDataFromClient(clientSocket, data);
-		ProcessingAndSendDAta(clientSocket, data);
+
+		ReceiveDataFromClient(clientSocket, data);
+		ProcessingData(data);
+		ReverseMessage(data);
+		
+		SendDataToClient(clientSocket, data);
 	}
 }	
+
+
+void StartListening(SOCKET &server)
+{
+	int retVal = listen(server, 10);
+	if (retVal == SOCKET_ERROR)
+		throw currentException("Listening failed with code: ", WSAGetLastError());
+}
 
 
 void CreateClientSocket(SOCKET &server, SOCKET &clientSocket)
@@ -64,7 +73,7 @@ void CreateClientSocket(SOCKET &server, SOCKET &clientSocket)
 }
 
 
-void ReceivingDataFromClient(SOCKET &clientSocket, char* data)
+void ReceiveDataFromClient(SOCKET &clientSocket, char* data)
 {
 	int retVal = recv(clientSocket, data, N, 0);
 	if (retVal == SOCKET_ERROR)
@@ -72,15 +81,12 @@ void ReceivingDataFromClient(SOCKET &clientSocket, char* data)
 }
 
 
-void ProcessingAndSendDAta(SOCKET &clientSocket, char* data)
+int ProcessingData(char* data)
 {
-	if (data[0] != 'S' && data[1] != '/n')
-	{
-		ReverseMessage(data);
-		SendDataToClient(clientSocket, data);
-	}
-	else
-		Shutdown(clientSocket);
+	if (data[0] == 'S' && data[1] == '/n')
+		throw currentException("The server was down: ", NULL);
+
+	return 0;
 }
 
 
@@ -96,13 +102,4 @@ void SendDataToClient(SOCKET clientSock, char* data)
 	int retVal = send(clientSock, data, N, 0);
 	if (retVal == SOCKET_ERROR)
 		throw currentException("Sending failed with code: ", retVal);
-}
-
-
-void Shutdown(SOCKET& clientSocket)
-{
-	char answer[] = "Server shutdown";
-	SendDataToClient(clientSocket, answer);
-	closesocket(clientSocket);
-	throw currentException("The server was down ", NULL);
 }
