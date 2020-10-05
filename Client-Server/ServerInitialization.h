@@ -6,7 +6,7 @@ void LibraryInitialization();
 void SocketInitialization(SOCKET& server, SOCKADDR_IN& sockAddr, LPHOSTENT &hostEnt);
 void CreateSocket(SOCKET& sock);
 void InitClientSocket(SOCKADDR_IN& sockAddr, int port);
-void BindSocket(SOCKET socket, SOCKADDR_IN sockAddr);
+void BindSocket(SOCKET &socket, SOCKADDR_IN &sockAddr);
 void GetHost(LPHOSTENT &lpHost);
 
 
@@ -30,7 +30,7 @@ void SocketInitialization(SOCKET& server, SOCKADDR_IN& sockAddr, LPHOSTENT &host
 	BindSocket(server, sockAddr);
 	GetHost(hostEnt);
 
-	std::cout << "Server started at " << inet_ntoa(sockAddr.sin_addr) << ", port: " << sockAddr.sin_port << std::endl;
+	std::cout << "Server started at " << inet_ntoa(sockAddr.sin_addr) << ", port: " << htons(sockAddr.sin_port) << std::endl;
 }
 
 void CreateSocket(SOCKET& sock)
@@ -49,7 +49,7 @@ void InitClientSocket(SOCKADDR_IN& sockAddr, int port)
 }
 
 
-void BindSocket(SOCKET socket, SOCKADDR_IN sockAddr)
+void BindSocket(SOCKET &socket, SOCKADDR_IN &sockAddr)
 {
 	int bindSocket = bind(socket, (LPSOCKADDR)&sockAddr, sizeof(sockAddr));
 	if (bindSocket == SOCKET_ERROR)
@@ -62,4 +62,5 @@ void GetHost(LPHOSTENT &hostEnt)
 	LPHOSTENT lpHost = gethostbyname("localhost");
 	if (lpHost == NULL)
 		throw currentException("Unable to get LPHOSTENT ", WSAGetLastError());
+
 }

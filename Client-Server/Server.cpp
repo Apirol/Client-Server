@@ -65,6 +65,8 @@ void StartListening(SOCKET &server)
 	int retVal = listen(server, 10);
 	if (retVal == SOCKET_ERROR)
 		throw currentException("Listening failed with code: ", WSAGetLastError());
+
+	std::cout << "Start listening.." << std::endl;
 }
 
 
@@ -74,7 +76,7 @@ void CreateClientSocket(SOCKET &server, SOCKET &clientSocket, SOCKADDR_IN &from)
 
 	clientSocket = accept(server, (sockaddr*)&from, &fromLenght);
 	if (clientSocket == SOCKET_ERROR)
-		throw currentException("Listening failed with code: ", WSAGetLastError());
+		throw currentException("Accepting failed with code: ", WSAGetLastError());
 	std::cout << "New connection accepted from " << inet_ntoa(from.sin_addr) << htons(from.sin_port) << std::endl;
 }
 
@@ -89,6 +91,7 @@ void ReceiveDataFromClient(SOCKET &clientSocket, std::string &data)
 
 	buffer[result] = '\0';
 	data = buffer;
+	std::cout << "Data was recieved" << std::endl;
 }
 
 
