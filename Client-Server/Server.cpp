@@ -60,7 +60,7 @@ void StartServer(SOCKET &server)
 }	
 
 
-void StartListening(SOCKET &server)
+void StartListening(SOCKET &server) // начинаем прослушивания
 {
 	int retVal = listen(server, 10);
 	if (retVal == SOCKET_ERROR)
@@ -70,7 +70,7 @@ void StartListening(SOCKET &server)
 }
 
 
-void CreateClientSocket(SOCKET &server, SOCKET &clientSocket, SOCKADDR_IN &from)
+void CreateClientSocket(SOCKET &server, SOCKET &clientSocket, SOCKADDR_IN &from) // создаём новый сокет клиента при подключении
 {
 	int fromLenght = sizeof(from);
 
@@ -81,7 +81,7 @@ void CreateClientSocket(SOCKET &server, SOCKET &clientSocket, SOCKADDR_IN &from)
 }
 
 
-void ReceiveDataFromClient(SOCKET &clientSocket, std::string &data)
+void ReceiveDataFromClient(SOCKET &clientSocket, std::string &data) // Получений данных от клиента
 {
 	char buffer[N];
 
@@ -95,7 +95,7 @@ void ReceiveDataFromClient(SOCKET &clientSocket, std::string &data)
 }
 
 
-void ProcessingData(SOCKET &clientSock, std::string &data)
+void ProcessingData(SOCKET &clientSock, std::string &data) // Обработка данных
 {
 	if (data == "stop")
 	{
@@ -107,14 +107,14 @@ void ProcessingData(SOCKET &clientSock, std::string &data)
 }
 
 
-void Shutdown(SOCKET& clientSock, std::string message)
+void Shutdown(SOCKET& clientSock, std::string message) // Выключение сервера 
 {
 	SendDataToClient(clientSock, message);
 	throw currentException("The server was down", NULL);
 }
 
 
-void SendDataToClient(SOCKET& clientSock, std::string data)
+void SendDataToClient(SOCKET& clientSock, std::string data) // Отправка преобразованных данных клиенту
 {
 	int result = send(clientSock, data.c_str(), data.size(), 0);
 	if (result == SOCKET_ERROR)
@@ -122,7 +122,7 @@ void SendDataToClient(SOCKET& clientSock, std::string data)
 }
 
 
-inline void ReverseMessage(std::string &data)
+inline void ReverseMessage(std::string &data) // Переворачиваем сообщение
 {
 	std::reverse(data.begin(), data.end());
 }

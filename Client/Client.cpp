@@ -52,7 +52,7 @@ int main()
 
 
 
-void ConnectToServer(SOCKET &client, SOCKADDR_IN &serverInfo)
+void ConnectToServer(SOCKET &client, SOCKADDR_IN &serverInfo) // Устанавливаем соединения с сервером
 {
 	int lastError = connect(client, (LPSOCKADDR)&serverInfo, sizeof(serverInfo));
 	if (lastError == SOCKET_ERROR)
@@ -61,7 +61,7 @@ void ConnectToServer(SOCKET &client, SOCKADDR_IN &serverInfo)
 }
 
 
-void SendMessageToServer(SOCKET& client, std::string message)
+void SendMessageToServer(SOCKET& client, std::string message) // Отправляем сообщение серверу
 {
 	int result = send(client, message.c_str(), message.size(), 0);
 	if (result == SOCKET_ERROR)
@@ -70,7 +70,7 @@ void SendMessageToServer(SOCKET& client, std::string message)
 }
 
 
-void RecieveAnswer(SOCKET& client, std::string &answer)
+void RecieveAnswer(SOCKET& client, std::string &answer) // Получаем ответ
 {
 	char buffer[N];
 
@@ -78,7 +78,7 @@ void RecieveAnswer(SOCKET& client, std::string &answer)
 	if (result == SOCKET_ERROR)
 		throw currentException("Receiving failed with code: ", WSAGetLastError());
 
-	buffer[result] = '\0';
-	answer = buffer;
+	buffer[result] = '\0'; // Добавляем символ конца строки
+	answer = buffer; 
 	std::cout << "Receive sucessfully" << std::endl;
 }

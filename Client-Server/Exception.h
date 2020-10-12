@@ -3,7 +3,7 @@
 #include "Winsock2.h"
 
 
-
+// Структура для обработки ошибок
 struct Exception {
 	std::string message;
 	int code;
