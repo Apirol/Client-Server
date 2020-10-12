@@ -10,7 +10,7 @@ void LibraryInitialization();
 void SocketInitialization(SOCKET& server, SOCKADDR_IN& sockAddr, std::string ip, LPHOSTENT &hostEnt);
 void CreateSocket(SOCKET& sock);
 void InitClientSocket(SOCKADDR_IN& sockAddr, std::string ip, int port);
-void GetHost(LPHOSTENT lpHost);
+void GetHost(LPHOSTENT &lpHost);
 
 
 void LibraryInitialization() // Инициализация библиотеки 
@@ -50,9 +50,9 @@ void InitClientSocket(SOCKADDR_IN& sockAddr, std::string ip, int port) // Заполн
 }
 
 
-void GetHost(LPHOSTENT hostEnt) // Получаем IP хоста
+void GetHost(LPHOSTENT &hostEnt) // Получаем IP хоста
 {
-	hostEnt = gethostbyname("");
+	hostEnt = gethostbyname("localhost");
 	if (hostEnt == NULL)
 		throw currentException("Unable to get LPHOSTENT ", WSAGetLastError());
 }
