@@ -42,7 +42,7 @@ void CreateSocket(SOCKET& sock) // Создаём сокет
 }
 
 
-void InitClientSocket(SOCKADDR_IN& sockAddr, std::string ip, int port) // Заполняем информацию о сервере
+void InitClientSocket(SOCKADDR_IN& sockAddr, std::string ip, int port) // Заполняем информацию о клиенте
 {
 	sockAddr.sin_family = PF_INET;
 	sockAddr.sin_port = htons(port);
@@ -52,7 +52,7 @@ void InitClientSocket(SOCKADDR_IN& sockAddr, std::string ip, int port) // Заполн
 
 void GetHost(LPHOSTENT &hostEnt) // Получаем IP хоста
 {
-	hostEnt = gethostbyname("localhost");
+	hostEnt = gethostbyname("");
 	if (hostEnt == NULL)
 		throw currentException("Unable to get LPHOSTENT ", WSAGetLastError());
 }

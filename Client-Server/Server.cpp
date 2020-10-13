@@ -77,6 +77,7 @@ void CreateClientSocket(SOCKET &server, SOCKET &clientSocket, SOCKADDR_IN &from)
 	clientSocket = accept(server, (sockaddr*)&from, &fromLenght);
 	if (clientSocket == SOCKET_ERROR)
 		throw currentException("Accepting failed with code: ", WSAGetLastError());
+
 	std::cout << "New connection accepted from " << inet_ntoa(from.sin_addr) << ", port: " << htons(from.sin_port) << std::endl;
 }
 

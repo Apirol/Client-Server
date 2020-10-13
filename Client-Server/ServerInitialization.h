@@ -5,10 +5,9 @@
 void LibraryInitialization();
 void SocketInitialization(SOCKET& server, SOCKADDR_IN& sockAddr, LPHOSTENT &hostEnt);
 void CreateSocket(SOCKET& sock);
-void InitClientSocket(SOCKADDR_IN& sockAddr, int port);
+void InitServerSocket(SOCKADDR_IN& sockAddr, int port);
 void BindSocket(SOCKET &socket, SOCKADDR_IN &sockAddr);
 void GetHost(LPHOSTENT &lpHost);
-
 
 const int N = 256;
 
@@ -26,7 +25,7 @@ void LibraryInitialization() // иницилизация библиотеки
 void SocketInitialization(SOCKET& server, SOCKADDR_IN& sockAddr, LPHOSTENT &hostEnt)
 {
 	CreateSocket(server);
-	InitClientSocket(sockAddr, 2002);
+	InitServerSocket(sockAddr, 2002);
 	BindSocket(server, sockAddr);
 	GetHost(hostEnt);
 
@@ -41,7 +40,7 @@ void CreateSocket(SOCKET& sock) // Создание сокета
 }
 
 
-void InitClientSocket(SOCKADDR_IN& sockAddr, int port) // Инициализируем сокет клиента
+void InitServerSocket(SOCKADDR_IN& sockAddr, int port) // Инициализируем сокет клиента
 {
 	sockAddr.sin_family = PF_INET; 
 	sockAddr.sin_port = htons(port); // указываем порт
@@ -59,7 +58,7 @@ void BindSocket(SOCKET &socket, SOCKADDR_IN &sockAddr)
 
 void GetHost(LPHOSTENT &hostEnt)
 {
-	hostEnt = gethostbyname("");
+	hostEnt = gethostbyname("localhost");
 	if (hostEnt == NULL)
 		throw currentException("Unable to get LPHOSTENT ", WSAGetLastError());
 }
